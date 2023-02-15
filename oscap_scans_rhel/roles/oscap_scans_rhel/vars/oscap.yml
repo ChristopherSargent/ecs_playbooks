@@ -1,0 +1,6 @@
+---
+
+# Oscap profile and policy for DISA STIG for Red Hat Enterprise Linux 7
+oscap_profile: xccdf_org.ssgproject.content_profile_stig
+oscap_policy: ssg-rhel7-ds-1.2
+

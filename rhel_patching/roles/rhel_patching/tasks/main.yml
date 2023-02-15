@@ -1,0 +1,35 @@
+#  Tested on OEL7/8, CentOS7/8, Ubuntu 18.04/20.04
+
+- name: "Update all packages on {{ inventory_hostname }}"
+  package:
+    name: '*'
+    state: latest
+    update_cache: yes
+  ignore_errors: true
+
+# Check if kenel was updated
+- name: Check if kernel was updated.
+  command: needs-restarting -r
+  register: result
+  ignore_errors: true
+
+# Display results of needs-restarting  
+- name: Display results of needs-restarting
+  debug:
+    var: result.rc
+
+# Reboot if kernel was updated
+- name: Reboot if kernel was updated.
+  command: shutdown -r now "Reboot required for updated kernel"
+  async: 30
+  poll: 0
+  when: result.rc == 1
+  register: rebooting
+  ignore_errors: true
+
+# Pause to allow server to reboot
+- name: Pause to allow server to reboot
+  pause:
+    seconds: 25
+  when: result.rc == 1
+  ignore_errors: true

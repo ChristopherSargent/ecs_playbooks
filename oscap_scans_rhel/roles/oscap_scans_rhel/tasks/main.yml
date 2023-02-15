@@ -1,0 +1,33 @@
+---
+# Use oscap.yml for variables
+- name: Load vars
+  include_vars: "oscap.yml"
+
+# Create oscap-reports directory
+- name: Create oscap directory
+  shell: mkdir -p /home/oscap-reports
+
+# Install oscap-scanner and scap-security-guide (note need to think about subscriptions here for RHEL)
+- name: install openscap scanner
+  package:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+  - openscap-scanner
+  - scap-security-guide
+
+- block:
+# Run oscap using profile and policy defined in oscap.yml
+  - name: run openscap
+    command: oscap xccdf eval \
+      --profile {{ oscap_profile }} \
+      --results-arf /tmp/oscap-arf.xml \
+      --report /home/oscap-reports/oscap-report.html \
+      --fetch-remote-resources \
+      /usr/share/xml/scap/ssg/content/{{ oscap_policy }}.xml
+    ignore_errors: true
+
+# Rename report with date and time stamp
+- name: Rename report
+  shell: "cp /home/oscap-reports/oscap-report.html /home/ec2-user/`uname -n`.oscap-report.$(date +'%Y%m%d%H%M').html && chown -R ec2-user:ec2-user /home/ec2-user"
+

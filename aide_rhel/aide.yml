@@ -1,0 +1,11 @@
+---
+# Master Playbook for aide RHEL7, RHEL8, OEL7 and OEL8
+# Christopher Sargent 02142023 
+
+- name: aide_rhel
+  become_user: root
+  hosts: all
+  tasks:
+    - include_role:
+        name: aide_rhel
+
