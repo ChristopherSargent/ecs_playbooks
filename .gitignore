@@ -1,0 +1,5 @@
+# ignore ssh key
+
+# ignore .lock files
+*.lock
+

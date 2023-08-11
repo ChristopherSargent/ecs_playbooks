@@ -1,0 +1,40 @@
+---
+# Deploy ec2 instances via ansible and AWX. Christopher Sargent 0812023
+- name: Creating an EC2 Instance with Creating a VPC and Subnet Id
+  hosts: localhost
+  tasks:
+    - name: Create a Security Group
+      amazon.aws.ec2_security_group:
+        name: "{{ security_group_name }}"
+        description: "Ansible_EC2_Security_Group"
+        vpc_id: "{{ vpc_id }}"
+        region: "{{ region }}"
+        rules:
+          - proto: tcp
+            ports:
+            - 22
+            - 443
+            cidr_ip: "{{ cidr_ip }}" 
+            rule_desc: "{{ rule_desc }}" #"allow ssh for CAS"
+      register: security_group
+
+    - ansible.builtin.debug:
+        var: security_group.group_id
+
+    - ansible.builtin.debug:
+        var: subnet.subnet.id
+
+    - name: Launch an EC2 Instance
+      amazon.aws.ec2_instance:
+        name: "{{ ec2_name }}"
+        key_name: "{{ key_name }}"
+        vpc_subnet_id: "{{ subnet_id  }}"
+        instance_type: "{{ instance_type }}"
+        security_group: "{{ security_group.group_id  }}"
+        count: "{{ count }}"
+        wait: yes
+        aws_region: "{{ region }}"
+        network:
+          assign_public_ip: "{{ true if public_ip == 'true' else false }}" #true
+        state: "{{ state }}" #present deploys, absent is alias for terminated.
+        image_id: "{{ ami }}"

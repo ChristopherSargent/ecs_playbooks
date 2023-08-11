@@ -17,6 +17,7 @@
   - scap-security-guide
 
 - block:
+
 # Run oscap using profile and policy defined in oscap.yml
   - name: run openscap
     command: oscap xccdf eval \
