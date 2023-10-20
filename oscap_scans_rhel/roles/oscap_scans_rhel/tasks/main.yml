@@ -24,7 +24,6 @@
       --profile {{ oscap_profile }} \
       --results-arf /tmp/oscap-arf.xml \
       --report /home/oscap-reports/oscap-report.html \
-      --fetch-remote-resources \
       /usr/share/xml/scap/ssg/content/{{ oscap_policy }}.xml
     ignore_errors: true
 
